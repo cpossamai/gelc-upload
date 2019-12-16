@@ -1,0 +1,28 @@
+<%- include('includes/header') %>
+
+
+<div class="container py-md-5 container--narrow">
+  <div class="d-flex justify-content-between">
+    <h2><%= upload.title %></h2>
+    <% if (upload.isVisitorOwner) { %>
+      <span class="pt-2">
+        <a href="/upload/<%= upload._id %>/edit" class="text-primary mr-2" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></a>
+        <form class="delete-upload-form d-inline" action="/upload/<%= upload._id %>/delete" method="POST">
+          <button class="delete-upload-button text-danger" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash"></i></button>
+        </form>
+      </span>
+   <% } %>
+  </div>
+    
+  <p class="text-muted small mb-4">
+    <a href="#"><img class="avatar-tiny" src="<%= upload.author.avatar %>"></a>
+     Posted by <a href="#"><%= upload.author.username %></a> on <%= upload.createdDate.getMonth() + 1 %>/<%= upload.createdDate.getDate() %>/<%= upload.createdDate.getFullYear() %></p>
+
+  <div class="body-content">
+    <%= upload.body %>
+    </div>
+   
+</div>
+
+
+<%- include('includes/footer') %>
