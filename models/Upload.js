@@ -184,6 +184,7 @@ console.log('fs.file _id',file[0]._id)
      
     // Read file
     const enterPath2 = fs.readFileSync(enterPath);
+    if (file[0].filename.slice(-4)!=".pdf"){
     // Convert it to pdf format with undefined filter (see Libreoffice doc about filter)
     libre.convert(enterPath2, extend, undefined, (err, done) => {
         if (err) {
@@ -193,6 +194,7 @@ console.log('fs.file _id',file[0]._id)
         // Here in done you have pdf file which you can save or transfer in another stream
         fs.writeFileSync(outputPath, done);
     });
+  }
     
     
   });

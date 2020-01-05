@@ -34,23 +34,41 @@ exports.create = function(req, res) {
 
 exports.viewSingle = async function(req, res) {
   try {
+    let pdfFile=""
     let upload = await Upload.findSingleById(req.params.id, req.visitorId)
     console.log('params',upload.file)
     let download = await Upload.downloadFile(upload.file)
     console.log('dirname:',__dirname)
+    console.log(upload.file[0].filename.slice(-4))
+    if (upload.file[0].filename.slice(-4)==".pdf"){
+      pdfFile = path.join('uploads', upload.file[0].filename)
+    }else{
     console.log('exists:',fs.existsSync('./uploads/'+upload.file[0].filename+'.pdf'))
- const pdfFile = path.join('uploads', upload.file[0].filename+'.pdf')
- fs.readFile(pdfFile, (err, data)=> {
-   if (err){
-    console.log("didn't work")
+ pdfFile = path.join('uploads', upload.file[0].filename+'.pdf')
+}
+ let change=0
+ let sent = 0
+ fs.watch('uploads',(folderChange)=>{
+   console.log(folderChange)
+   if (folderChange=="change"){
+     change++
    }
-   res.setHeader('Content-Type', 'application/pdf')
-   res.send(data)
-   
- }
+   if (change==2 && sent==0){
+    fs.readFile(pdfFile, (err, data)=> {
+      if (err){
+       console.log("didn't work")
+      }
+      res.setHeader('Content-Type', 'application/pdf')
+      sent=1
+      res.send(data)
+      
+    }
+    
+    
+    )
+   }
+ })
  
- 
- )
 
       // res.render('single-file-screen', {upload: upload})
   } catch {
