@@ -1,0 +1,12 @@
+-admin status
+-if admin, show all users
+-if admin, click on user to show file screen
+-add course code
+-automatically put in last used course code for user in file upload page
+-admin to search for user filtered by course code
+-cross page security
+-test on linux server
+-test on local mongodb
+-after successful post, redirect to profile page
+-add date to update password
+-add update email address

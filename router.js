@@ -44,6 +44,11 @@ router.post('/register', userController.register)
 router.post('/login',userController.login)
 
 router.post('/logout',userController.logout)
+router.get('/forgotPassword',userController.forgotPassword)
+router.post('/forgotPassword',userController.emailToken)
+router.get('/forgotPassword/:id',userController.gotToken)
+router.post('/resetPassword',userController.resetPassword)
+
 
 //profile related routes
 
