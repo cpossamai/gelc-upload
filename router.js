@@ -4,6 +4,7 @@ const router = express.Router()
 const userController = require('./controllers/userController')
 const postController = require('./controllers/postController')
 const uploadController = require('./controllers/uploadController')
+const passwordChangeController = require('./controllers/passwordChangeController')
 
 const multer = require('multer');
 var storage = multer.diskStorage({
@@ -44,10 +45,12 @@ router.post('/register', userController.register)
 router.post('/login',userController.login)
 
 router.post('/logout',userController.logout)
-router.get('/forgotPassword',userController.forgotPassword)
-router.post('/forgotPassword',userController.emailToken)
-router.get('/forgotPassword/:id',userController.gotToken)
-router.post('/resetPassword',userController.resetPassword)
+
+//password change routes
+router.get('/forgotPassword',passwordChangeController.forgotPassword)
+router.post('/forgotPassword',passwordChangeController.emailToken)
+router.get('/forgotPassword/:id',passwordChangeController.gotToken)
+router.post('/resetPassword',passwordChangeController.resetPassword)
 
 
 //profile related routes
