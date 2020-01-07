@@ -91,13 +91,11 @@ User.updatePassword = function (password,email) {
   return new Promise((resolve,reject) => {
     let salt = bcrypt.genSaltSync(10)
     password = bcrypt.hashSync(password, salt)
-    usersCollection.updateOne({email:email},{ $set:{password:password}},(doc,err)=>{
-      if(err){
-        console.log(err)
-        reject(err)
-      }
-      console.log(doc)
+    usersCollection.updateOne({email:email},{ $set:{password:password}}).then((doc)=>{
+          
       resolve(doc)
+    }).catch((err)=>{
+      reject(err)
     })
   })
 }
