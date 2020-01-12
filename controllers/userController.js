@@ -4,6 +4,7 @@ const Upload = require('../models/Upload')
 
 
 exports.mustBeLoggedIn = function (req, res, next) {
+  try{
   if (req.session.user) {
     next()
   } else {
@@ -12,6 +13,9 @@ exports.mustBeLoggedIn = function (req, res, next) {
       res.redirect('/')
     })
   }
+}catch{
+  console.log("Error in userController.mustBeLoggedIn")
+}
 }
 
 exports.login = function (req, res) {
@@ -71,6 +75,7 @@ exports.ifUserExists = function (req, res, next) {
 
 exports.profilePostsScreen = function (req, res) {
   // ask our post model for posts by a certain author id
+
   Post.findByAuthorId(req.profileUser._id).then(function (posts) {
     res.render('profile', {
       posts: posts,
@@ -85,6 +90,7 @@ exports.profilePostsScreen = function (req, res) {
 
 exports.profileFilesScreen = function (req, res) {
   // ask our post model for posts by a certain author id
+  try{
   Upload.findByAuthorId(req.profileUser._id).then(function (files) {
     res.render('profileFiles', {
       files: files,
@@ -92,7 +98,10 @@ exports.profileFilesScreen = function (req, res) {
       profileAvatar: req.profileUser.avatar
     })
   }).catch(function () {
+    
     res.render("404")
   })
-
+}catch(e){
+  console.log("Error in userController.profileFilesScreen",e)
+}
 }

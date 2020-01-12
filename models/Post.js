@@ -27,27 +27,27 @@ Post.prototype.validate = function() {
 }
 
 Post.prototype.create = function() {
-  console.log("post 1,")
+
   return new Promise((resolve, reject) => {
-    console.log("post 2,")
+   
     this.cleanUp()
-    console.log("post 3,")
+    
     this.validate()
-    console.log("post 4,")
+    
     if (!this.errors.length) {
-      console.log("post 5,")
+     
       // save post into database
       postsCollection.insertOne(this.data).then(() => {
-        console.log("post 6,")
+    
         resolve()
-        console.log("post 7,")
+       
       }).catch(() => {
-        console.log("post 8 catch,")
+       
         this.errors.push("Please try again later.")
         reject(this.errors)
       })
     } else {
-      console.log("post 8, reject")
+     
       reject(this.errors)
     }
   })
@@ -96,7 +96,7 @@ Post.findSingleById = function(id, visitorId) {
     ], visitorId)
 
     if (posts.length) {
-      console.log(posts[0])
+   
       resolve(posts[0])
     } else {
       reject()

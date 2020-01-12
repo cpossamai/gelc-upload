@@ -5,6 +5,12 @@
           <h1 class="display-3">Please upload your work for today</h1>      
           <p class="lead text-muted">By uploading your work, you are declaring that although you may have had some help from your instructor, it is your own work.</p>
         </div>
+        <% errors.forEach(function(message){%>
+          <div class="alert alert-danger text-center"><%=message%></div>
+          <%})%>
+          <% if (success==true){%>
+            <div class="alert alert-success text-center">The file has been uploaded</div>
+            <%}%>
     <form action="/upload-file" enctype="multipart/form-data" method="POST">
       <div class="form-group">
         <label for="upload-title" class="text-muted mb-1"><small>Title</small></label>

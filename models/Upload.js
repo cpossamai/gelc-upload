@@ -25,6 +25,7 @@ let Upload = function(data, file, userid) {
 
 
 Upload.prototype.cleanUp = function() {
+  try{
   if (typeof(this.data.title) != "string") {this.data.title = ""}
   if (typeof(this.data.comments) != "string") {this.data.body = ""}
   // get rid of any bogus properties
@@ -35,15 +36,21 @@ Upload.prototype.cleanUp = function() {
     createdDate: new Date(),
     author: ObjectID(this.userid)
   }
+}catch(e){
+  console.log("error in Upload.cleanup",e)
+}
 
 }
 
 
 
 Upload.prototype.validate = function() {
+  try{
   if (this.data.title == "") {this.errors.push("You must provide a title.")}
   if (this.file == "") {this.errors.push("You must provide a file.")}
- }
+ }catch(e){
+   console.log("Error in Upload.validate",e)
+ }}
 
 
 
@@ -51,6 +58,7 @@ Upload.prototype.validate = function() {
 Upload.prototype.create = async function() {
   return new Promise((resolve, reject) => {
     this.cleanUp()
+    try{
     this.data.file.forEach((element,index)=> {
          
           
@@ -58,36 +66,27 @@ Upload.prototype.create = async function() {
         pipe(uploadStream= bucket.openUploadStream(element._id,'./uploads/'+element.filename)).
         on('error', function(error) {
           assert.ifError(error);
-          console.log(error)
+         
         }).
         on('finish', function() {
-          console.log('Done');                          
-          console.log('fs.files._id:'+uploadStream.id)
-          
-
-
-
-fs.unlink('./uploads/'+element.filename, (err) => {
+         
+fs.unlink('./uploads/'+element.filename,(err)=>{
   if (err) {
-    console.error(err)
-    
-  }
-
-  //file removed
+  console.log("Error removing file from hdd",err)}
+  
 })
+
                   
         })
-        try{
-          
+                  
         this.data.file[index]._id=uploadStream.id
-        }catch(e)
-        {console.log('error on line 62',e)}
-    
-    })
+           
+    })}catch(e){
+      console.log("Error in Upload.create.forEach",e)
+    }
     this.validate()
-    console.log('data file id:'+this.data.file[0].filename)
-    console.log('data file id:'+this.data.file[0]._id)
     
+    try{
     if (!this.errors.length) {
       // save upload into database
       
@@ -101,7 +100,7 @@ fs.unlink('./uploads/'+element.filename, (err) => {
       })
     } else {
       reject(this.errors)
-    }
+    }}catch(e){console.log("Error in Upload.create.if block",e)}
   })
 }
 
@@ -148,7 +147,7 @@ Upload.findSingleById = function(id, visitorId) {
     ], visitorId)
 
     if (uploads.length) {
-      console.log(uploads[0])
+     
       resolve(uploads[0])
     } else {
       reject()
@@ -167,17 +166,14 @@ Upload.findByAuthorId = function(authorId) {
 Upload.downloadFile = function(file){
   var outputPath
   return new Promise(async function(resolve, reject) {
-console.log('fs.file _id',file[0]._id)
+
   bucket.openDownloadStream(file[0]._id).
   pipe(fs.createWriteStream('./uploads/'+file[0].filename)).
   on('error', function(error) {
     assert.ifError(error);
   }).
   on('finish', function() {
-    console.log('done!');
-    
-
-     
+         
     const extend = '.pdf'
     const enterPath = path.join(__dirname, '../uploads/'+file[0].filename);
     outputPath = path.join(__dirname, '../uploads/'+file[0].filename+extend);
@@ -187,9 +183,6 @@ console.log('fs.file _id',file[0]._id)
     if (file[0].filename.slice(-4)!=".pdf"){
     // Convert it to pdf format with undefined filter (see Libreoffice doc about filter)
     libre.convert(enterPath2, extend, undefined, (err, done) => {
-        if (err) {
-          console.log(`Error converting file: ${err}`);
-        }
         
         // Here in done you have pdf file which you can save or transfer in another stream
         fs.writeFileSync(outputPath, done);
