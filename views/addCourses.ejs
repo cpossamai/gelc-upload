@@ -1,0 +1,39 @@
+<%- include('includes/header')%>
+
+
+  
+  <div class="container">
+  <h1 class="display-4 text-center py-1">Courses</h1>
+  
+  <div class="jumbotron p-3 shadow-sm">
+  <form id="create-form" action="/addCourse" method="POST">
+  <div class="d-flex align-items-center">
+  <input id="create-field" name="course" autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;">
+  <button class="btn btn-primary">Add New Course</button>
+  </div>
+  </form>
+  </div>
+  
+  <ul id="item-list" class="list-group pb-5">
+    ${courses.map(function(course) {
+      return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+      <span class="item-text">${course.text} <div>time:</div></span>
+      <div>
+      
+      <button data-id="${course._id}" class="edit-me btn btn-secondary btn-lg mr-1">Edit</button>
+      <button data-id="${course._id}" class="delete-me btn btn-danger btn-lg">Delete</button>
+      
+      
+      </div>
+      </li>`
+    }).join('')}
+  </ul>
+  
+  </div>
+  
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/browser.js"></script>
+
+
+
+<%- include('includes/footer')%>

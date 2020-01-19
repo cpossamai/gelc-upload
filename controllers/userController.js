@@ -18,10 +18,31 @@ exports.mustBeLoggedIn = function (req, res, next) {
 }
 }
 
+exports.adminMustBeLoggedIn = function (req, res, next) {
+  try{
+    
+  if (req.session.user.admin) {
+    console.log(req.session.user.username)
+    next()
+  } else {
+    req.flash("errors", "You must be logged in to perform that action.")
+    req.session.save(function () {
+      res.redirect('../')
+    })
+  }
+}catch{
+  console.log("Error in userController.mustBeLoggedIn")
+  req.flash("errors", "You must be logged in to perform that action.")
+    req.session.save(function () {
+      res.redirect('../')
+    })
+}
+}
+
 exports.login = function (req, res) {
   let user = new User(req.body)
   user.login().then(function (result) {
-    req.session.user = { avatar: user.avatar, username: user.data.username, _id: user.data._id }
+    req.session.user = { avatar: user.avatar, username: user.data.username, _id: user.data._id, admin:user.data.admin}
     req.session.save(function () {
       res.redirect('/')
     })
@@ -88,6 +109,18 @@ exports.profilePostsScreen = function (req, res) {
 
 }
 
+exports.displayAllUsers= function(req,res){
+  User.getAllUsers().then((users)=>{
+    res.render('allUsers',{
+      users: users,
+     })}).catch((e)=>{
+       console.log(e)
+      res.render("404")
+     }
+  )
+  
+}
+
 exports.profileFilesScreen = function (req, res) {
   // ask our post model for posts by a certain author id
   try{
@@ -101,6 +134,31 @@ exports.profileFilesScreen = function (req, res) {
     
     res.render("404")
   })
+}catch(e){
+  console.log("Error in userController.profileFilesScreen",e)
+}
+}
+
+exports.adminProfileFilesScreen = function (req, res) {
+  // ask our upload model for files by a certain author id
+  try{
+    console.log("id:",req.params.id)
+    
+    User.findById(req.params.id).then((user)=>{
+      console.log(user)
+    
+  Upload.findByAuthorId(req.params.id).then(function (files) {
+    console.log(files)
+    res.render('profileFiles', {
+      files: files,
+      profileUsername: user.username,
+      profileAvatar: user.avatar
+    })
+  }).catch(function (e) {
+    console.log(e)
+    res.render("404")
+  })
+}).catch((e)=>{console.log(e)})
 }catch(e){
   console.log("Error in userController.profileFilesScreen",e)
 }

@@ -1,6 +1,3 @@
--admin status
--if admin, show all users
--if admin, click on user to show file screen
 -add course code
 -automatically put in last used course code for user in file upload page
 -admin to search for user filtered by course code

@@ -3,6 +3,7 @@ const router = express.Router()
 
 const userController = require('./controllers/userController')
 const postController = require('./controllers/postController')
+const courseController = require('./controllers/courseController')
 const uploadController = require('./controllers/uploadController')
 const passwordChangeController = require('./controllers/passwordChangeController')
 const multer = require('multer');
@@ -19,12 +20,26 @@ var storage = multer.diskStorage({
 var uploads = multer({
   storage: storage,
   fileFilter: function (req, file, cb) {
-    
-    if (file.mimetype === 'application/pdf' || file.mimetype === 'application/octet-stream' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'text/csv' || file.mimetype === 'text/plain') {
+    console.log(file)
+    if (file.mimetype === 'application/pdf' || 
+    file.mimetype === 'application/octet-stream' || 
+    file.mimetype === 'application/vnd.ms-publisher' || 
+    file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'||
+    file.mimetype === 'image/jpeg' || 
+    file.mimetype === 'image/png' || 
+    file.mimetype === 'text/csv' || 
+    file.mimetype === 'application/vnd.ms-excel' || 
+    file.mimetype === 'application/msword' || 
+    file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.template' || 
+    file.mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || 
+    file.mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.slideshow' || 
+    file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+    file.mimetype === 'text/plain') {
       cb(null, true);
     } else {
+      console.log("Error uploading file of type", file.mimetype)
       req.fileValidationError = 'goes wrong on the mimetype';
-      return cb(null, false, new Error('goes wrong on the mimetype'));
+      return cb(null, false, new Error("Error uploading file of type", file.mimetype));
     }
   },
 });
@@ -36,6 +51,9 @@ router.post('/register', userController.register)
 router.post('/login', userController.login)
 
 router.post('/logout', userController.logout)
+router.get('/admin', userController.adminMustBeLoggedIn, userController.displayAllUsers)
+router.get('/adminUser/:username', userController.adminMustBeLoggedIn, userController.ifUserExists, userController.profileFilesScreen)
+//router.get('/adminUser/:username', userController.ifUserExists, userController.profileFilesScreen)
 
 //password change routes
 router.get('/forgotPassword', passwordChangeController.forgotPassword)
@@ -84,6 +102,11 @@ router.get('/file/:id', userController.mustBeLoggedIn, uploadController.viewSing
 }catch(e){
   console.log("Error in router.get('/file/:id'",e)
 }
+
+//Course related routes
+router.post('/addCourse', courseController.addCourse)
+router.post('/updateCourse', courseController.updateCourse)
+router.post('/deleteCourse', courseController.deleteCourse)
 
 
 module.exports = router

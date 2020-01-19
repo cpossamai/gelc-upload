@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs")
 const usersCollection = require('../db').db().collection("users")
 const validator = require("validator")
 const md5 = require('md5')
-
+const ObjectID = require('mongodb').ObjectID
 let User = function (data, getAvatar) {
   this.data = data
   this.errors = []
@@ -20,7 +20,7 @@ User.prototype.cleanUp = function () {
     username: this.data.username.trim().toLowerCase(),
     email: this.data.email.trim().toLowerCase(),
     password: this.data.password
-  }
+    }
 }
 
 User.prototype.validate = function () {
@@ -29,7 +29,7 @@ User.prototype.validate = function () {
     if (this.data.username != "" && !validator.isAlphanumeric(this.data.username)) { this.errors.push("Username can only contain letters and numbers.") }
     if (!validator.isEmail(this.data.email)) { this.errors.push("You must provide a valid email address.") }
     if (this.data.password == "") { this.errors.push("You must provide a password.") }
-    if (this.data.password.length > 0 && this.data.password.length < 12) { this.errors.push("Password must be at least 12 characters.") }
+    if (this.data.password.length > 0 && this.data.password.length < 8) { this.errors.push("Password must be at least 8 characters.") }
     if (this.data.password.length > 50) { this.errors.push("Password cannot exceed 50 characters.") }
     if (this.data.username.length > 0 && this.data.username.length < 3) { this.errors.push("Username must be at least 3 characters.") }
     if (this.data.username.length > 30) { this.errors.push("Username cannot exceed 30 characters.") }
@@ -100,6 +100,17 @@ User.updatePassword = function (password,email) {
   })
 }
 
+User.getAllUsers = ()=>{
+  return new Promise((resolve,reject)=>{
+    usersCollection.find().toArray().then((doc)=>{
+resolve(doc)
+    }).catch((err)=>{
+      console.log(err)
+      reject(err)
+    })
+  })
+}
+
 User.prototype.getAvatar = function () {
   this.avatar = `https://gravatar.com/avatar/${md5(this.data.email)}?s=128`
 }
@@ -124,6 +135,32 @@ User.findByUsername = function (username) {
       }
     }).catch(function () {
       reject()
+    })
+  })
+}
+
+User.findById = function (id) {
+  return new Promise(function (resolve, reject) {
+    if (typeof (id) != "string") {
+      reject("Not of type string")
+      
+    }
+    console.log(id)
+    usersCollection.findOne({ _id: new ObjectID(id) }).then(function (userDoc) {
+      console.log("userDoc",userDoc)
+      if (userDoc) {
+        userDoc = new User(userDoc, true)
+        userDoc = {
+          _id: userDoc.data._id,
+          username: userDoc.data.username,
+          avatar: userDoc.avatar
+        }
+        resolve(userDoc)
+      } else {
+        reject("Seems there was no document matching the id number")
+      }
+    }).catch(function (e) {
+      reject(e)
     })
   })
 }

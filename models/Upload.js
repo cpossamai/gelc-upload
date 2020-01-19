@@ -105,6 +105,7 @@ fs.unlink('./uploads/'+element.filename,(err)=>{
 }
 
 Upload.reusableUploadQuery = function(uniqueOperations, visitorId) {
+  console.log("visitor id:",visitorId)
   return new Promise(async function(resolve, reject) {
     let aggOperations = uniqueOperations.concat([
       {$lookup: {from: "users", localField: "author", foreignField: "_id", as: "authorDocument"}},
@@ -156,6 +157,7 @@ Upload.findSingleById = function(id, visitorId) {
 }
 
 Upload.findByAuthorId = function(authorId) {
+  console.log("author id:",authorId)
   return Upload.reusableUploadQuery([
     {$match: {author: authorId}},
     {$sort: {createdDate: -1}}

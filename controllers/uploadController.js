@@ -7,20 +7,22 @@ exports.viewCreateScreen = function (req, res) {
   res.render('upload-work', { success:false, errors: req.flash('error') })
 }
 
-exports.upload = function (req, res, next) {
+/*exports.upload = function (req, res, next) {
 
   const title = req.body.title
 
   const comments = req.body.comments
 
 
-}
+}*/
 
 exports.create = function (req, res) {
   let upload = new Upload(req.body, req.files, req.session.user._id)
   upload.create().then(function () {
+    console.log("Error in uploadController.create ", req.body.title)
     res.render('upload-work',{success:true, errors: req.flash('error')})
   }).catch(function (errors) {
+    console.log("Error in uploadController.create ",errors)
     req.flash('errors', errors)
     req.session.save(() => {
       res.render('upload-work',{success:false, errors: req.flash('error')})
