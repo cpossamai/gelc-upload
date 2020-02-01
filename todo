@@ -3,7 +3,6 @@
 -admin to search for user filtered by course code
 -cross page security
 -test on linux server
--test on local mongodb
 -after successful post, redirect to profile page
 -add date to update password
 -add update email address

@@ -1,5 +1,6 @@
 const Post = require('../models/Post')
 
+
 exports.viewCreateScreen = function(req, res) {
   res.render('create-post')
 }
@@ -29,4 +30,8 @@ exports.viewEditScreen = async function(req, res) {
   } catch {
     res.render("404")
   }
+}
+
+exports.deletePost = function (req, res) {
+  Post.deletePost(req.body.id) 
 }

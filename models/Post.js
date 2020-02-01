@@ -111,4 +111,9 @@ Post.findByAuthorId = function(authorId) {
   ])
 }
 
+Post.deletePost = function (postId) {
+  postsCollection.deleteOne({ _id: new ObjectID(postId) }, function () {
+    console.log("Success")
+  })
+}
 module.exports = Post

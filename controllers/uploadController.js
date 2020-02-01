@@ -1,36 +1,65 @@
 const Upload = require('../models/Upload')
+const Course = require('../models/Course')
 const fs = require('fs')
 const path = require('path')
 //const appBundle = require('./dist/app-bundle.js')
 
 exports.viewCreateScreen = function (req, res) {
-  res.render('upload-work', { success:false, errors: req.flash('error') })
+  Course.CoursesToArray().then((courses) => {
+    res.render('upload-work', { success: false, errors: req.flash('error'), courses: courses })
+  }).catch((e) => { 
+    console.log("uploadController.viewCreateScreen - error getting courses",e)
+    res.render(404)
+  })
+
 }
 
-/*exports.upload = function (req, res, next) {
+exports.errorReply = function (req, res, next) {
+  if (req.flash('errors').length > 0) {
+    console.log("entered 1")
+    Course.CoursesToArray().then((courses) => {
+      res.render('upload-work', { success: false, errors: req.flash('error'), courses: courses })
+    }).catch((e) => { 
+      console.log("uploadController.viewCreateScreen - error getting courses",e)
+      res.render(404)
+    })
+  } else {
+    console.log("entered 2")
+    next()
+  }
+}
 
-  const title = req.body.title
+exports.reply = function (req, res) {
 
-  const comments = req.body.comments
+  Course.CoursesToArray().then((courses) => {
+    res.render('upload-work', { success: true, errors: req.flash('error'), courses: courses })
+  }).catch((e) => { 
+    console.log("uploadController.viewCreateScreen - error getting courses",e)
+    res.render(404)
+  })
 
+}
 
-}*/
-
-exports.create = function (req, res) {
+exports.create = function (req, res, next) {
   let upload = new Upload(req.body, req.files, req.session.user._id)
   upload.create().then(function () {
-    console.log("Error in uploadController.create ", req.body.title)
-    res.render('upload-work',{success:true, errors: req.flash('error')})
+    next()
+
+
   }).catch(function (errors) {
-    console.log("Error in uploadController.create ",errors)
+    console.log("Error in uploadController.create ", errors)
     req.flash('errors', errors)
     req.session.save(() => {
-      res.render('upload-work',{success:false, errors: req.flash('error')})
+      Course.CoursesToArray().then((courses) => {
+        res.render('upload-work', { success: false, errors: req.flash('error'), courses: courses })
+      }).catch((e) => { 
+        console.log("uploadController.viewCreateScreen - error getting courses",e)
+        res.render(404)
+      })
     })
 
   })
 }
-
 
 
 
